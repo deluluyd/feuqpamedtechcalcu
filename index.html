@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MedTech</title>
+  <link rel="stylesheet" href="Far_Easter_University_Logo.svg.png" type="image/x-icon" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: auto;
+      max-width: 700px;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      margin-top: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.549);
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: darkgreen;
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    header h1 {
+      color: white;
+      margin: 0;
+    }
+
+    #logo {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    h2 {
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+    th, td {
+      border-bottom: 1px solid #ccc;
+      padding: 10px;
+      text-align: center;
+    }
+
+    input[type="number"] {
+      width: 90%;
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      background-color: darkgreen;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: rgb(0, 68, 0);
+    }
+
+    #result {
+      text-align: center;
+      font-weight: bold;
+      font-size: 1.2em;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>MedTech</h1>
+    <img src="Far_Easter_University_Logo.svg.png" alt="logo of feu" id="logo">
+  </header>
+
+  <section class="computation">
+    <h2>Computation for QPA</h2>
+    <table id="qpa-table">
+      <thead>
+        <tr>
+          <th>Units</th>
+          <th>Quality Point</th>
+          <th>Weighted QP</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><input type="number" class="unit" /></td>
+          <td><input type="number" class="point" /></td>
+          <td><span class="weighted"></span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="buttons">
+      <button onclick="addRow()">Add Row</button>
+      <button onclick="removeRow()">Remove Row</button>
+      <button onclick="calculateQPA()">Calculate QPA</button>
+    </div>
+
+    <div id="result"></div>
+  </section>
+
+  <script>
+    const tableBody = document.querySelector("#qpa-table tbody");
+    const resultDiv = document.getElementById("result");
+
+    function addRow() {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td><input type="number" class="unit" /></td>
+        <td><input type="number" class="point" /></td>
+        <td><span class="weighted"></span></td>
+      `;
+      tableBody.appendChild(row);
+      attachAutoCompute();
+    }
+
+    function removeRow() {
+      if (tableBody.rows.length > 1) {
+        tableBody.deleteRow(tableBody.rows.length - 1);
+      } else {
+        alert("At least one row must remain.");
+      }
+    }
+
+    function attachAutoCompute() {
+      const rows = tableBody.querySelectorAll("tr");
+      rows.forEach(row => {
+        const unitInput = row.querySelector(".unit");
+        const pointInput = row.querySelector(".point");
+        unitInput.oninput = pointInput.oninput = () => computeWeighted(row);
+      });
+    }
+
+    function computeWeighted(row) {
+      const unitInput = row.querySelector(".unit");
+      const pointInput = row.querySelector(".point");
+      const weightedDisplay = row.querySelector(".weighted");
+
+      const unit = parseFloat(unitInput.value);
+      const point = parseFloat(pointInput.value);
+
+      if (!isNaN(unit) && !isNaN(point)) {
+        weightedDisplay.textContent = (unit * point).toFixed(2);
+      } else {
+        weightedDisplay.textContent = "";
+      }
+    }
+
+    function calculateQPA() {
+      let totalUnits = 0;
+      let totalWeighted = 0;
+
+      const rows = tableBody.querySelectorAll("tr");
+      rows.forEach(row => {
+        const unit = parseFloat(row.querySelector(".unit").value);
+        const point = parseFloat(row.querySelector(".point").value);
+
+        if (!isNaN(unit) && !isNaN(point)) {
+          totalUnits += unit;
+          totalWeighted += unit * point;
+        }
+      });
+
+      const qpa = totalUnits > 0 ? (totalWeighted / totalUnits).toFixed(2) : 0;
+      resultDiv.textContent = `QPA: ${qpa}`;
+    }
+
+    attachAutoCompute();
+  </script>
+</body>
+</html>
